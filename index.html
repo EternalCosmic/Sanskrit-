@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanskrit Roots Engine & Interactive Academy</title>
+    <style>
+        :root {
+            --primary: #d35400;
+            --secondary: #e67e22;
+            --dark: #2c3e50;
+            --light: #fdfaf6;
+            --accent: #27ae60;
+            --text: #34495e;
+            --border: #e8dcc4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--light); color: var(--text); line-height: 1.6; }
+        header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2.5rem 1rem; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px; }
+        header p { font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        nav { display: flex; justify-content: center; background: var(--dark); padding: 0.5rem; sticky: top; position: sticky; top: 0; z-index: 100; }
+        nav a { color: white; text-decoration: none; padding: 0.75rem 1.5rem; margin: 0 0.5rem; font-weight: 600; border-radius: 4px; transition: 0.3s; }
+        nav a:hover, nav a.active { background: var(--primary); }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        section { display: none; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 2rem; animation: fadeIn 0.5s ease; }
+        section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-bottom: 3px solid var(--border); padding-bottom: 0.5rem; font-size: 1.8rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .card { background: var(--light); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; border-left: 5px solid var(--secondary); }
+        .card h3 { color: var(--dark); margin-bottom: 0.5rem; font-size: 1.3rem; display: flex; justify-content: space-between; }
+        .devanagari { font-family: 'Noto Sans Devanagari', Arial, sans-serif; background: #f0e6d2; padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--primary); font-size: 1.2rem; }
+        
+        /* Search/Filter styles */
+        .search-box { width: 100%; padding: 1rem; font-size: 1.1rem; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; outline: none; transition: 0.3s; }
+        .search-box:focus { border-color: var(--primary); }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .tag { background: #eee; padding: 0.4rem 1rem; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .tag.active, .tag:hover { background: var(--secondary); color: white; }
+
+        /* Interactive Engine Sandbox Styles */
+        .sandbox-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+        @media(max-width: 768px) { .sandbox-layout { grid-template-columns: 1fr; } }
+        .selector-panel { background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); }
+        .select-group { margin-bottom: 1.5rem; }
+        .select-group label { display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--dark); }
+        .select-group select { width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border); font-size: 1rem; background: white; cursor: pointer; }
+        .display-panel { background: var(--dark); color: white; padding: 2.5rem; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 300px; position: relative; overflow: hidden; }
+        .display-panel::before { content: "ॐ"; position: absolute; font-size: 15rem; color: rgba(255,255,255,0.03); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+        .equation { font-size: 1.8rem; font-weight: bold; margin-bottom: 1.5rem; letter-spacing: 1px; color: #f1c40f; }
+        .meaning-box { background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 8px; width: 100%; max-width: 500px; border-left: 4px solid var(--secondary); }
+        .meaning-box h4 { font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem; }
+
+        /* Grammatical Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background-color: var(--dark); color: white; font-weight: 600; }
+        tr:hover { background-color: #fffbf4; }
+        
+        /* Interactive Quiz Arena */
+        .quiz-container { background: #fdfaf6; border: 2px dashed var(--border); padding: 2rem; border-radius: 12px; margin-top: 1rem; }
+        .quiz-question { font-size: 1.3rem; font-weight: bold; margin-bottom: 1.5rem; color: var(--dark); }
+        .quiz-options { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .option-btn { background: white; border: 2px solid var(--border); padding: 1rem; text-align: left; border-radius: 8px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-weight: 500; }
+        .option-btn:hover { border-color: var(--secondary); background: #fffbf0; }
+        .option-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .option-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .quiz-actions { margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-btn { background: var(--dark); color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .nav-btn:hover { background: var(--primary); }
+        #quiz-feedback { font-weight: bold; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sanskrit Generative Language Academy</h1>
+        <p>Explore the cosmic, mathematical engine of an infinite language built entirely from elemental sound roots.</p>
+    </header>
+
+    <nav>
+        <a href="#" class="active" onclick="switchTab(event, 'dictionary')">Root Library</a>
+        <a href="#" onclick="switchTab(event, 'engine')">Prefix Engine Sandbox</a>
+        <a href="#" onclick="switchTab(event, 'grammar')">Grammar & Cases</a>
+        <a href="#" onclick="switchTab(event, 'quiz-section')">Quiz Arena</a>
+    </nav>
+
+    <div class="container">
+
+        <!-- SECTION 1: ROOT DICTIONARY -->
+        <section id="dictionary" class="active">
+            <h2>The Comprehensive Root Dictionary</h2>
+            <input type="text" class="search-box" id="rootSearch" placeholder="Search by root, english meaning, or classification (e.g., 'gam', 'go', 'cosmic')..." onkeyup="filterRoots()">
+            
+            <div class="filter-tags">
+                <span class="tag active" onclick="filterCategory('all', this)">All Roots</span>
+                <span class="tag" onclick="filterCategory('movement', this)">Movement & Flowing</span>
+                <span class="tag" onclick="filterCategory('cosmic', this)">Cosmic & Elemental</span>
+                <span class="tag" onclick="filterCategory('knowing', this)">Thinking & Knowing</span>
+                <span class="tag" onclick="filterCategory('ocean', this)">Ocean & Voyages</span>
+                <span class="tag" onclick="filterCategory('expression', this)">Speaking & Sounds</span>
+            </div>
+
+            <div class="grid-3" id="rootsGrid">
+                <!-- Data injected via Javascript -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTERACTIVE ENGINE SANDBOX -->
+        <section id="engine">
+            <h2>The Word-Generation Engine</h2>
+            <p style="margin-bottom: 1.5rem;">Combine an elemental <em>Dhātu</em> (verb root) with an <em>Upasarga</em> (prefix) and the nominal suffix <em>-na</em> to generate abstract nouns instantly.</p>
+            
+            <div class="sandbox-layout">
+                <div class="selector-panel">
+                    <div class="select-group">
+                        <label for="sandboxRoot">1. Choose a Root (Dhātu):</label>
+                        <select id="sandboxRoot" onchange="updateSandbox()">
+                            <option value="gam">√गम् (gam) – To go / move</option>
+                            <option value="hṛ">√हृ (hṛ) – To take / carry</option>
+                            <option value="nī">√नी (nī) – To lead / guide</option>
+                            <option value="vṛt">√वृत् (vṛt) – To turn / revolve</option>
+                            <option value="tara">√तर (tara) – To cross / navigate</option>
+                        </select>
+                    </div>
+
+                    <div class="select-group">
+                        <label for="sandboxPrefix">2. Add a Prefix (Upasarga):</label>
+                        <select id="sandboxPrefix" onchange="updateSandbox()">
+                            <!-- Dynamic options populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="display-panel">
+                    <div class="equation" id="sandboxEquation">Prefix + Root + Suffix</div>
+                    <div class="meaning-box">
+                        <h4 id="sandboxResultWord">GeneratedWord</h4>
